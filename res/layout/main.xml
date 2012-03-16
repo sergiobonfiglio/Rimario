@@ -11,16 +11,16 @@
 
         <EditText
             android:id="@+id/editText1"
-            android:layout_width="137dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.64"
             android:singleLine="true" />
+
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content" />
 
-        <ProgressBar
-            android:id="@+id/progressBar2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right" />
     </LinearLayout>
 
     <ListView
