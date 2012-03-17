@@ -9,9 +9,9 @@
         <item >3</item>
     </integer-array>
     <string-array name="rhyme_length2">
-        <item >1</item>
-        <item >2</item>
         <item >3</item>
+        <item >2</item>
+        <item >1</item>
     </string-array>
 
 </resources>
