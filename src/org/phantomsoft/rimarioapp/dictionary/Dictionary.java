@@ -5,14 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.widget.Toast;
 
 public class Dictionary {
-    private ArrayList<String> dictionary;
+    private List<String> dictionary;
     String[] data;
 
     private SuffixesTree suffixTree;
@@ -28,52 +30,20 @@ public class Dictionary {
 	this.progressDialog = progressDialog;
 
 	this.suffixTree = new SuffixesTree();
-	new Thread() {
-	    @Override
-	    public void run() {
-		try {
-		    loadFile(is);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}.start();
+
+	DictionaryLoader dictLoading = new DictionaryLoader(activity);
+	dictLoading.execute(is);
+	// try {
+	// this.dictionary = dictLoading.get();
+	// } catch (InterruptedException e) {
+	// e.printStackTrace();
+	// } catch (ExecutionException e) {
+	// e.printStackTrace();
+	// }
 
     }
 
-    private void loadFile(InputStream is) throws IOException {
-
-	// activity.showDialog(RimarioAppActivity.PROGRESS_DIALOG);
-
-	InputStreamReader isr = new InputStreamReader(is);
-	BufferedReader br = new BufferedReader(isr);
-
-	ArrayList<String> tempList = new ArrayList<String>();
-	String line = br.readLine();
-	while (line != null) {
-	    tempList.add(line);
-	    // suffixTree.add(line);
-	    line = br.readLine();
-
-	    // Message msg = handler.obtainMessage();
-	    // msg.arg1 += 1;
-	    // handler.sendMessage(msg);
-	}
-	br.close();
-	isr.close();
-	is.close();
-
-	this.dictionary = tempList;
-
-	// notify the list adapter with the new suffix
-	activity.runOnUiThread(new Runnable() {
-	    public void run() {
-		Toast.makeText(activity, "Dictionary loaded",
-			Toast.LENGTH_SHORT).show();
-	    }
-	});
-	// return tempList;
-    }
+ 
 
     public ArrayList<String> searchSuffix(String suffix) {
 
@@ -89,6 +59,75 @@ public class Dictionary {
 	// return this.suffixTree.subSet(suffix, endSuffix);
 
 	return result;
+    }
+
+}
+
+class DictionaryLoader extends AsyncTask<InputStream, Integer, List<String>> {
+
+    Activity context;
+    private ProgressDialog dialog;
+
+    public DictionaryLoader(Activity context) {
+	this.context = context;
+	this.dialog = new ProgressDialog(context);
+    }
+
+    @Override
+    protected void onPreExecute() {
+	this.dialog.setMessage("Loading dictionary");
+	dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	dialog.setCancelable(false);
+	this.dialog.show();
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+	dialog.setProgress(values[0]);
+    }
+
+    @Override
+    protected List<String> doInBackground(InputStream... params) {
+	ArrayList<String> tempList = new ArrayList<String>();
+
+	int count = 0;
+
+	try {
+	    for (int i = 0; i < params.length; i++) {
+		InputStreamReader isr = new InputStreamReader(params[i]);
+		BufferedReader br = new BufferedReader(isr);
+
+		
+		String line;
+		line = br.readLine();
+
+		while (line != null) {
+		    tempList.add(line);
+		    // suffixTree.add(line);
+		    line = br.readLine();
+
+		    publishProgress(count++);
+		}
+		br.close();
+		isr.close();
+		params[i].close();
+	    }
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+
+	return tempList;
+    }
+
+    @Override
+    protected void onPostExecute(List<String> result) {
+
+	Toast.makeText(context, "Dictionary loaded", Toast.LENGTH_LONG).show();
+
+	if (this.dialog.isShowing()) {
+	    this.dialog.dismiss();
+	}
+
     }
 
 }

@@ -3,11 +3,6 @@
 
     
     <string name="app_name">RimarioApp</string>
-    <integer-array name="rhyme_length">
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-    </integer-array>
     <string-array name="rhyme_length2">
         <item >3</item>
         <item >2</item>

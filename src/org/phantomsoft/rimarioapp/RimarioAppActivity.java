@@ -59,6 +59,8 @@ public class RimarioAppActivity extends Activity {
 	    progressDialog.setProgress(0);
 	}
     }
+    
+    
 
     /** Called when the activity is first created. */
 
@@ -68,14 +70,13 @@ public class RimarioAppActivity extends Activity {
 	this.context = getApplicationContext();
 	setContentView(R.layout.main);
 
-
 	handler = new Handler() {
 	    public void handleMessage(Message msg) {
 		int total = msg.arg1;
 		progressDialog.setProgress(total);
-		if (total >= 100) {
-		    progressDialog.dismiss();
-		}
+		// if (total >= 100) {
+		// progressDialog.dismiss();
+		// }
 	    }
 	};
 
