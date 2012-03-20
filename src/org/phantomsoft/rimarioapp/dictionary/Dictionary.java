@@ -43,8 +43,6 @@ public class Dictionary {
 
     }
 
- 
-
     public ArrayList<String> searchSuffix(String suffix) {
 
 	ArrayList<String> result = new ArrayList<String>();
@@ -78,6 +76,7 @@ class DictionaryLoader extends AsyncTask<InputStream, Integer, List<String>> {
 	this.dialog.setMessage("Loading dictionary");
 	dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	dialog.setCancelable(false);
+	dialog.setMax(1000);
 	this.dialog.show();
     }
 
@@ -97,9 +96,7 @@ class DictionaryLoader extends AsyncTask<InputStream, Integer, List<String>> {
 		InputStreamReader isr = new InputStreamReader(params[i]);
 		BufferedReader br = new BufferedReader(isr);
 
-		
-		String line;
-		line = br.readLine();
+		String line = br.readLine();
 
 		while (line != null) {
 		    tempList.add(line);

@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import org.phantomsoft.rimarioapp.dictionary.Dictionary;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -39,29 +37,6 @@ public class RimarioAppActivity extends Activity {
 
     public static final int PROGRESS_DIALOG = 0;
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-	switch (id) {
-	case PROGRESS_DIALOG:
-	    progressDialog = new ProgressDialog(RimarioAppActivity.this);
-	    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	    progressDialog.setMessage("Loading...");
-	    return progressDialog;
-	default:
-	    return null;
-	}
-    }
-
-    @Override
-    protected void onPrepareDialog(int id, Dialog dialog) {
-	switch (id) {
-	case PROGRESS_DIALOG:
-	    progressDialog.setProgress(0);
-	}
-    }
-    
-    
-
     /** Called when the activity is first created. */
 
     @Override
@@ -70,18 +45,8 @@ public class RimarioAppActivity extends Activity {
 	this.context = getApplicationContext();
 	setContentView(R.layout.main);
 
-	handler = new Handler() {
-	    public void handleMessage(Message msg) {
-		int total = msg.arg1;
-		progressDialog.setProgress(total);
-		// if (total >= 100) {
-		// progressDialog.dismiss();
-		// }
-	    }
-	};
-
 	Resources res = getResources();
-	InputStream is = res.openRawResource(R.raw.wordlist);
+	InputStream is = res.openRawResource(R.raw.prova);
 
 	dictionary = new Dictionary(is, this, progressDialog, handler);
 
