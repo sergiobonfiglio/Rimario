@@ -6,9 +6,8 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class DictionaryDBHelper extends SQLiteOpenHelper implements DictionaryTableColumns {
-
-
+public class DictionaryDBHelper extends SQLiteOpenHelper implements
+	DictionaryTableColumns {
 
     public DictionaryDBHelper(Context context, String name,
 	    CursorFactory factory, int version) {
@@ -18,11 +17,13 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements DictionaryTa
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-	db.execSQL("create table " + TABLE_NAME + " (" + ID
-		+ " integer primary key autoincrement, " + WORD
-		+ " text not null, " + REVERSED_WORD + " text not null, "
-		+ LAST_3_CHARS + " text not null, " + LAST_2_CHARS
-		+ " text not null, " + LAST_CHAR + " text not null, " + ");");
+	db.execSQL("create table " + TABLE_NAME + " (" +
+		ID + " integer primary key autoincrement, " +
+		WORD + " text not null, " +
+		REVERSED_WORD + " text not null, " +
+		LAST_3_CHARS + " text not null, " +
+		LAST_2_CHARS + " text not null, " +
+		LAST_CHAR + " text not null, " + ");");
 
     }
 
