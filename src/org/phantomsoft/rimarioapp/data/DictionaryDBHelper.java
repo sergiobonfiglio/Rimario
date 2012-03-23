@@ -15,10 +15,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DictionaryDBHelper extends SQLiteOpenHelper implements
-	DictionaryTableColumns {
+	DictionaryTableColumns, SuffixFinder {
 
     // The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/com.phantomsoft.rimarioapp/databases/";
+    private static String DB_PATH =
+	    "/data/data/com.phantomsoft.rimarioapp/databases/";
 
     static final String DATABASE_NAME = "dict_it.db";
     static final int DATABASE_VERSION = 1;
@@ -118,7 +119,7 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	db.insert(TABLE_NAME, null, map);
     }
 
-    public Cursor searchSuffix(String suffix) {
+    public Iterable<String> findSuffix(String suffix) {
 
 	assert suffix != null && suffix.length() > 0;
 
@@ -148,7 +149,7 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 
 	}
 
-	return result;
+	return new IterableCursor(result, WORD);
 
     }
 
