@@ -7,13 +7,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.phantomsoft.rimarioapp.data.SuffixFinder;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.widget.Toast;
 
-public class Dictionary {
+public class Dictionary implements SuffixFinder{
     private List<String> dictionary;
     String[] data;
 
@@ -43,7 +45,7 @@ public class Dictionary {
 
     }
 
-    public ArrayList<String> searchSuffix(String suffix) {
+    public ArrayList<String> findSuffix(String suffix) {
 
 	ArrayList<String> result = new ArrayList<String>();
 

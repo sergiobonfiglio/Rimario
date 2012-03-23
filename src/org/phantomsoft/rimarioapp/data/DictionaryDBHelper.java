@@ -7,13 +7,13 @@ import java.io.OutputStream;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-@Deprecated
 public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	DictionaryTableColumns {
 
@@ -34,11 +34,15 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-	db.execSQL("create table " + TABLE_NAME + " (" + ID
-		+ " integer primary key autoincrement, " + WORD
-		+ " text not null, " + REVERSED_WORD + " text not null, "
-		+ LAST_3_CHARS + " text not null, " + LAST_2_CHARS
-		+ " text not null, " + LAST_CHAR + " text not null, " + ");");
+	db.execSQL("create table " + TABLE_NAME +
+		" (" +
+		ID + " integer primary key autoincrement, " +
+		WORD + " text not null, " +
+		REVERSED_WORD + " text not null, " +
+		LAST_3_CHARS + " text not null, " +
+		LAST_2_CHARS + " text not null, " +
+		LAST_CHAR + " text not null " +
+		");");
 
     }
 
@@ -50,20 +54,31 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	onCreate(db);
     }
 
-    public void open() {
+    public void open() throws IOException, SQLiteException {
 
 	db = dbExists();
 
 	if (db == null) {
-	    // the database has to be created by copying the default one from
-	    // assets
-	    this.getReadableDatabase();// creates default db
-
+	    // the default database will be copied frone assets
+	    copyDataBase();
+	    db = dbExists();
 	}
 
     }
 
-    private void copyDataBase() throws IOException {
+    private SQLiteDatabase dbExists() throws SQLiteException {
+	try {
+	    return SQLiteDatabase.openDatabase(DB_PATH + DATABASE_NAME, null,
+		    SQLiteDatabase.OPEN_READWRITE);
+	} catch (SQLiteException e) {
+	    Log.d("Rimario", "The DB doesn't exists");
+	    throw e;
+	}
+    }
+
+    private void copyDataBase() throws IOException, SQLiteException {
+
+	this.getReadableDatabase();// creates default db
 
 	// Open your local db as the input stream
 	InputStream myInput = context.getAssets().open(DATABASE_NAME);
@@ -88,16 +103,6 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 
     }
 
-    private SQLiteDatabase dbExists() throws SQLiteException {
-	try {
-	    return SQLiteDatabase.openDatabase(DB_PATH + DATABASE_NAME, null,
-		    SQLiteDatabase.OPEN_READWRITE);
-	} catch (SQLiteException e) {
-	    Log.d("Rimario", "The DB already exists");
-	    throw e;
-	}
-    }
-
     public void close() {
 	db.close();
     }
@@ -111,6 +116,40 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	map.put(LAST_CHAR, getLastChars(string, 1));
 
 	db.insert(TABLE_NAME, null, map);
+    }
+
+    public Cursor searchSuffix(String suffix) {
+
+	assert suffix != null && suffix.length() > 0;
+
+	String[] colsNames = new String[] { WORD };
+
+	Cursor result = null;
+
+	if (suffix.length() > 3) {
+	    String reversedSuffix = new StringBuffer(suffix).reverse()
+		    .toString();
+
+	    result = db.query(TABLE_NAME, colsNames, REVERSED_WORD + " LIKE '"
+		    + reversedSuffix + "%'", null, null, null, WORD);
+	} else if (suffix.length() == 3) {
+
+	    result = db.query(TABLE_NAME, colsNames, LAST_3_CHARS + " = '"
+		    + getLastChars(suffix, 3) + "'", null, null, null, WORD);
+
+	} else if (suffix.length() == 2) {
+
+	    result = db.query(TABLE_NAME, colsNames, LAST_2_CHARS + " = '"
+		    + getLastChars(suffix, 2) + "'", null, null, null, WORD);
+
+	} else if (suffix.length() == 1) {
+	    result = db.query(TABLE_NAME, colsNames, LAST_CHAR + " = '"
+		    + getLastChars(suffix, 1) + "'", null, null, null, WORD);
+
+	}
+
+	return result;
+
     }
 
     private static String getLastChars(String input, int n) {

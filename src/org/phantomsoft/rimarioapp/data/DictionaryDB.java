@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+@Deprecated
 public class DictionaryDB implements DictionaryTableColumns {
 
     // The Android's default system path of your application database.
@@ -27,7 +28,7 @@ public class DictionaryDB implements DictionaryTableColumns {
 	if (db == null) {
 	    // the database has to be created by copying the default one from
 	    // assets
-	    
+
 	}
 
     }

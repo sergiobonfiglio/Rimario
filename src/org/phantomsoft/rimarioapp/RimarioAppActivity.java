@@ -3,7 +3,7 @@ package org.phantomsoft.rimarioapp;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.phantomsoft.rimarioapp.dictionary.Dictionary;
+import org.phantomsoft.rimarioapp.data.DictionaryDBHelper;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -21,7 +21,8 @@ public class RimarioAppActivity extends Activity {
     private Context context;
 
     private ArrayList<String> listData;
-    private Dictionary dictionary;
+    //private Dictionary dictionary;
+    private DictionaryDBHelper db;
 
     private ListView list;
     private ListAdapter listAdapter;
@@ -48,7 +49,7 @@ public class RimarioAppActivity extends Activity {
 	Resources res = getResources();
 	InputStream is = res.openRawResource(R.raw.prova);
 
-	dictionary = new Dictionary(is, this, progressDialog, handler);
+	//dictionary = new Dictionary(is, this, progressDialog, handler);
 
 	this.listData = new ArrayList<String>();
 	this.listAdapter = new ListAdapter(this,
