@@ -1,16 +1,15 @@
 package org.phantomsoft.rimarioapp;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.phantomsoft.rimarioapp.data.DictionaryDBHelper;
+import org.phantomsoft.rimarioapp.data.SuffixFinder;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -21,8 +20,8 @@ public class RimarioAppActivity extends Activity {
     private Context context;
 
     private ArrayList<String> listData;
-    //private Dictionary dictionary;
-    private DictionaryDBHelper db;
+    // private Dictionary dictionary;
+    private SuffixFinder suffixFinder;
 
     private ListView list;
     private ListAdapter listAdapter;
@@ -33,11 +32,6 @@ public class RimarioAppActivity extends Activity {
     private Spinner spinner;
     private SpinnerListener spinnerListener;
 
-    private ProgressDialog progressDialog;
-    private Handler handler;
-
-    public static final int PROGRESS_DIALOG = 0;
-
     /** Called when the activity is first created. */
 
     @Override
@@ -46,15 +40,18 @@ public class RimarioAppActivity extends Activity {
 	this.context = getApplicationContext();
 	setContentView(R.layout.main);
 
-	Resources res = getResources();
-	InputStream is = res.openRawResource(R.raw.prova);
-
-	//dictionary = new Dictionary(is, this, progressDialog, handler);
+	// dictionary = new Dictionary(is, this, progressDialog, handler);
+	try {
+	    suffixFinder = new DictionaryDBHelper(context);
+	} catch (IOException e) {
+	    Log.e("Rimario", "An error occured while opening the db");
+	    e.printStackTrace();
+	}
 
 	this.listData = new ArrayList<String>();
 	this.listAdapter = new ListAdapter(this,
 		android.R.layout.simple_list_item_1, android.R.id.text1,
-		listData, dictionary);
+		listData, suffixFinder);
 
 	this.list = (ListView) findViewById(R.id.listView);
 
@@ -81,5 +78,4 @@ public class RimarioAppActivity extends Activity {
 	spinnerListener.addObserver(textListener);
 
     }
-
 }

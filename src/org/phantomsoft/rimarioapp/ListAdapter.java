@@ -1,5 +1,6 @@
 package org.phantomsoft.rimarioapp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -7,6 +8,7 @@ import java.util.Observer;
 import org.phantomsoft.rimarioapp.data.SuffixFinder;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.widget.ArrayAdapter;
 
 class ListAdapter extends ArrayAdapter<String> implements Observer {
@@ -23,17 +25,25 @@ class ListAdapter extends ArrayAdapter<String> implements Observer {
     public void update(Observable observable, Object suffix) {
 
 	// search suffix
-	Iterable<String> result = suffixFinder.findSuffix((String) suffix);
+	Iterable<String> result;
+	try {
+	    result = suffixFinder.findSuffix((String) suffix);
+	    this.setNotifyOnChange(false);
 
-	this.setNotifyOnChange(false);
+	    this.clear();
 
-	this.clear();
+	    for (String word : result) {
+		this.add(word);
+	    }
 
-	for (String word : result) {
-	    this.add(word);
+	    // update listview
+	    notifyDataSetChanged();
+
+	} catch (SQLiteException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
 
-	// update listview
-	notifyDataSetChanged();
     }
 }

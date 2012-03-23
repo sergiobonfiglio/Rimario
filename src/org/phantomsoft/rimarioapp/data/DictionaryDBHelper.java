@@ -9,7 +9,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -19,7 +18,7 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 
     // The Android's default system path of your application database.
     private static String DB_PATH =
-	    "/data/data/com.phantomsoft.rimarioapp/databases/";
+	    "/data/data/org.phantomsoft.rimarioapp/databases/";
 
     static final String DATABASE_NAME = "dict_it.db";
     static final int DATABASE_VERSION = 1;
@@ -27,10 +26,11 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
     SQLiteDatabase db;
     Context context;
 
-    public DictionaryDBHelper(Context context, String name,
-	    CursorFactory factory, int version) {
-	super(context, name, factory, version);
+    public DictionaryDBHelper(Context context) throws IOException {
+	super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	this.context = context;
+	open();
+	close();
     }
 
     @Override
@@ -55,11 +55,12 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	onCreate(db);
     }
 
-    public void open() throws IOException, SQLiteException {
+    public void open() throws IOException {
 
-	db = dbExists();
+	try {
+	    db = dbExists();
 
-	if (db == null) {
+	} catch (SQLiteException e) {
 	    // the default database will be copied frone assets
 	    copyDataBase();
 	    db = dbExists();
@@ -119,9 +120,19 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 	db.insert(TABLE_NAME, null, map);
     }
 
-    public Iterable<String> findSuffix(String suffix) {
+    public Iterable<String> findSuffix(String suffix) throws SQLiteException,
+	    IOException {
 
 	assert suffix != null && suffix.length() > 0;
+
+	if (db == null || db.isOpen()) {
+	    db.close();
+	}
+
+	if (!db.isDbLockedByCurrentThread()
+		&& !db.isDbLockedByOtherThreads()) {
+	    open();
+	}
 
 	String[] colsNames = new String[] { WORD };
 
@@ -149,8 +160,12 @@ public class DictionaryDBHelper extends SQLiteOpenHelper implements
 
 	}
 
-	return new IterableCursor(result, WORD);
-
+	try {
+	    return new IterableCursor(result, WORD);
+	} catch (IllegalColumnNameException e) {
+	    e.printStackTrace();
+	    return null;
+	}
     }
 
     private static String getLastChars(String input, int n) {

@@ -5,7 +5,8 @@ import java.util.Iterator;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-public class IterableCursor extends CursorWrapper implements Iterator<String> {
+public class IterableCursor extends CursorWrapper implements Iterable<String>,
+	Iterator<String> {
 
     private Cursor cursor;
     private String columnName;
@@ -23,7 +24,7 @@ public class IterableCursor extends CursorWrapper implements Iterator<String> {
 
     }
 
-    private boolean isLegal(String columnNames) {
+    private boolean isLegal(String columnName) {
 
 	String[] legalNames = getLegalColumnNames(cursor);
 
@@ -40,12 +41,11 @@ public class IterableCursor extends CursorWrapper implements Iterator<String> {
 	return c.getColumnNames();
     }
 
-    @Override
     public boolean hasNext() {
-	return (cursor.getPosition() < cursor.getCount());
+	return cursor.getCount() != 0
+		&& (cursor.getPosition() < cursor.getCount()-1);
     }
 
-    @Override
     public String next() {
 	if (this.hasNext()) {
 	    cursor.moveToNext();
@@ -55,10 +55,13 @@ public class IterableCursor extends CursorWrapper implements Iterator<String> {
 	}
     }
 
-    @Override
     public void remove() throws UnsupportedOperationException {
 
 	throw new UnsupportedOperationException();
 
+    }
+
+    public Iterator<String> iterator() {
+	return this;
     }
 }
